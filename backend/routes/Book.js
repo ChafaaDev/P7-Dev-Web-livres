@@ -1,11 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const Book = require('../models/Book')
+const Book = require("../models/Book");
+const bookCtrl = require("../controllers/Book");
+router.get("/", bookCtrl.getAllBooks);
+router.get("/:id", bookCtrl.getOneBook);
+router.post("/:id", bookCtrl.createBook);
+router.delete("/:id", bookCtrl.deleteBook);
+router.put("/:id", bookCtrl.updateBook);
 
-router.get('/', (req, res, next)=>{
-   Book.find()
-   .then(books =>{
-    res.status(200).json({books})
-   })
-})
+module.exports = router;

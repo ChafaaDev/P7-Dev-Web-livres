@@ -4,9 +4,11 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 
 const mongoPw = process.env.mongo_pw;
-
+const bookRoutes = require('./routes/Book');
+const userRoutes = require('./routes/user')
 mongoose
   .connect(
+
     `mongodb+srv://Chafaa:${mongoPw}@cluster0.edbuqhj.mongodb.net/?retryWrites=true&w=majority`,
     {
       useNewUrlParser: true,
@@ -29,10 +31,13 @@ mongoose
     next();
   });  
 
-app.use('/', (req, res, next)=>{
-    res.status(200).json({message:'that is the response'})
-})
+// app.use('/', (req, res, next)=>{
+//     res.status(200).json({message:'that is the response'})
+// })
 
 app.use(express.json());
 
-module.exports = app
+app.use('/api/books', bookRoutes);
+app.use('/api/auth', userRoutes)
+
+module.exports = app;
