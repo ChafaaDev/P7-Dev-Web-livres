@@ -2,8 +2,9 @@ const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
 require('dotenv').config()
-
+const Book = require('./models/Book')
 const mongoPw = process.env.mongo_pw;
+
 const bookRoutes = require('./routes/Book');
 const userRoutes = require('./routes/user')
 mongoose
@@ -18,7 +19,7 @@ mongoose
 
   .then(() => console.log("Connected to Mongodb successfully!"))
   .catch(() => console.log("Failed to connect to Mongodb"));
-  app.use((req, res, next) => {
+  app.use((_, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
       "Access-Control-Allow-Headers",
@@ -30,14 +31,28 @@ mongoose
     );
     next();
   });  
+  
+  app.use(express.json());
 
-// app.use('/', (req, res, next)=>{
-//     res.status(200).json({message:'that is the response'})
+//   app.get('/api/books', (req, res, next)=>{
+//       Book.find()
+//       .then((books)=> res.status(200).json({books}))
+//       .catch(error => res.status(400).json({error}))
+//   })
+// app.get('/api/books/:id', (req, res, next)=>{
+//   Book.findOne({_id:req.params.id})
+//   .then(book => res.status(200).json({book}))
+//   .catch(err => res.status(404).json({err}))
 // })
-
-app.use(express.json());
-
 app.use('/api/books', bookRoutes);
-app.use('/api/auth', userRoutes)
+app.use('/api/auth', userRoutes);
+
+
+
+ 
+
+
+   
+
 
 module.exports = app;

@@ -2,6 +2,7 @@ import axios from 'axios';
 import { API_ROUTES } from '../utils/constants';
 
 function formatBooks(bookArray) {
+ 
   return bookArray.map((book) => {
     const newBook = { ...book };
     // eslint-disable-next-line no-underscore-dangle
@@ -38,11 +39,12 @@ export async function getBooks() {
   try {
     const response = await axios({
       method: 'GET',
-      url: `${API_ROUTES.BOOKS}`,
+      url: `${API_ROUTES.BOOKS}`
     });
     // eslint-disable-next-line array-callback-return
     const books = formatBooks(response.data);
     return books;
+  
   } catch (err) {
     console.error(err);
     return [];
@@ -53,7 +55,10 @@ export async function getBook(id) {
   try {
     const response = await axios({
       method: 'GET',
-      url: `${API_ROUTES.BOOKS}/${id}`,
+      url: `${API_ROUTES.BOOKS}/${id}`
+      // headers: {
+      //   Authorization: `Bearer ${localStorage.getItem('token')}`,
+      // },
     });
     const book = response.data;
     // eslint-disable-next-line no-underscore-dangle
@@ -72,7 +77,7 @@ export async function getBestRatedBooks() {
       url: `${API_ROUTES.BEST_RATED}`,
     });
     return formatBooks(response.data);
-  } catch (e) {
+  } catch (e) { 
     console.error(e);
     return [];
   }

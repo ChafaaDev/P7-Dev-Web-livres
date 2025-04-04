@@ -1,13 +1,16 @@
-const { type } = require('@testing-library/user-event/dist/type');
+
 const mongoose = require('mongoose')
 
-const bookSchema = mongoose.Schema({
+const bookSchema = new mongoose.Schema({
+    // id:{type:String},
     title:{type:String, required:true},
     author:{type:String, required:true},
     year:{type:Number, required:true},
     genre:{type:String, required:true},
-    rating:{type:Number, required:true},
-    cover:{type:Buffer}
-})
+    // ratings:{type:String},
+    imageUrl:{type:String, required:true}
+});
 
-module.exports = mongoose.model('Book', bookSchema);
+const Book = mongoose.model('Book', bookSchema);
+
+module.exports = Book;
