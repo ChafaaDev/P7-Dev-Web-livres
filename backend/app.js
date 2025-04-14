@@ -44,8 +44,9 @@ mongoose
 //   .then(book => res.status(200).json({book}))
 //   .catch(err => res.status(404).json({err}))
 // })
-app.use('/api/books', bookRoutes);
+
 app.use('/api/auth', userRoutes);
+app.use('/api/books', bookRoutes);
 app.use('/images', express.static('./images'))
 
 

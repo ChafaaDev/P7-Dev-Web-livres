@@ -1,5 +1,5 @@
 const Book = require('../models/Book')
-
+const User = require('../models/User')
 exports.getAllBooks = (req, res)=>{
  Book.find()
  .then(books=>res.status(200).json(books))
@@ -26,22 +26,30 @@ exports.createBook = (req,res)=>{
     .catch(error =>res.status(400).json({error}))
 };
 
-exports.getOneBook = (req, res)=>{
-    Book.findOne({_id:req.params.id})
+exports.getOneBook = async (req, res)=>{
+    const {id} = req.params
+    await Book.findOne({_id:id})
     .then((book) => res.status(200).json(book))
     .catch(error => res.status(400).json({error}))
 };
 
-exports.rateOneBook = (req, res)=>{
-    Book.updateOne({_id:req.params.id})
-    const newRate = new Book.averageRating({
-        userId:req.auth.userId,
-        averageRating:req.body.averageRating
-    })
-    newRate.save()
-    .then(rating => res.status.json({rating}))
-    .catch(error => res.status(400).json({error}))
+exports.rateOneBook = async (req, res)=>{
+    try{
+        const {id} = req.params;
+        let book = Book.findOneAndUpdate({_id:id,
+            $set:JSON.stringify({userId:req.auth.userId, grade:req}),
+            new: true
+
+        })
+        res.status(201).json()
+    }catch(error){
+        console.error('Error rating', error);
+        res.status(500).json({error:error.message})
+    } 
+      
 }
+
+
 
 exports.updateBook = (req, res) => {
     Book.updateOne({...req.body ,_id:req.params.id})

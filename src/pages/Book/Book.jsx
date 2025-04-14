@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { useUser } from '../../lib/customHooks';
 import styles from './Book.module.css';
 import { getBook, deleteBook } from '../../lib/common';
