@@ -23,7 +23,7 @@ exports.createBook = (req, res) => {
     ...bookObject,
     userId: req.auth.userId,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
+      req.file.optimizedFilename
     }`,
   });
   book
@@ -85,14 +85,19 @@ exports.updateBook = async (req, res) => {
   try {
     const { id } = req.params;
     const filter = { _id: id };
-    const update = req.body;
-    const bookObject = JSON.parse(req.body.book);
-    let book = await Book.updateOne(filter, {
-      ...bookObject,
-      userId: req.auth.userId,
-      imageUrl: `${req.protocol}://${req.get("host")}/images/${
+    const update = req.body.book;
+    const bookObject = JSON.parse(update);
+    if(!!req.file)bookObject.push({imageUrl:`${req.protocol}://${req.get("host")}/images/${
         req.file.filename
-      }`,
+      }`})
+   
+    await Book.updateOne(filter, {
+      ...bookObject,
+      userId:req.auth.userId
+      // userId: req.auth.userId,
+      // imageUrl: `${req.protocol}://${req.get("host")}/images/${
+      //   req.file.filename
+      // }`
     });
 
     return res.status(201).json({ message: "Book updated with success!" });

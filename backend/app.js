@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
+const path =  require('path')
 require('dotenv').config()
 const Book = require('./models/Book')
 const mongoPw = process.env.mongo_pw;
@@ -36,7 +37,8 @@ mongoose
 
 app.use('/api/auth', userRoutes);
 app.use('/api/books', bookRoutes);
-app.use('/images', express.static('./images'))
+// app.use('/images', express.static('./images'))
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
  

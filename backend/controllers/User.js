@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt'); 
 const jwt = require('jsonwebtoken');
+const Book = require('../models/Book');
 
 exports.signUp = (req, res) =>{
     bcrypt.hash(req.body.password, 10)
@@ -9,7 +10,8 @@ exports.signUp = (req, res) =>{
             email:req.body.email,
             password: hash
         })
-        
+        if(newUser.email === User.find({email:req.body.email}))
+            return res.status(500).json({message:'email already token'})
         newUser.save()
         .then((user)=> res.status(200).json(user))
         .catch(error => {
