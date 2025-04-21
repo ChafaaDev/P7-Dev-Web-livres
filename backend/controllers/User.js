@@ -9,6 +9,7 @@ exports.signUp = (req, res) =>{
             email:req.body.email,
             password: hash
         })
+        
         newUser.save()
         .then((user)=> res.status(200).json(user))
         .catch(error => {

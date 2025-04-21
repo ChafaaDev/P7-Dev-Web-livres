@@ -45,7 +45,7 @@ exports.rateOneBook = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.auth.userId;
-    const grade = req.body.grade;
+    const grade = req.body.rating;
 
     const book = await Book.findOne({ _id: id });
 
