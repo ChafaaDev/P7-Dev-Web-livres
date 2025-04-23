@@ -1,6 +1,8 @@
 const Book = require("../models/Book");
-const User = require("../models/User");
+const fs = require('fs')
 const auth = require("../controllers/middleware/auth");
+const { error } = require("console");
+
 exports.getAllBooks = (req, res) => {
   Book.find()
     .then((books) => res.status(200).json(books))
@@ -81,34 +83,44 @@ exports.rateOneBook = async (req, res) => {
   }
 };
 
-exports.updateBook = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const filter = { _id: id };
-    const update = req.body.book;
-    const bookObject = JSON.parse(update);
-    if(!!req.file)bookObject.push({imageUrl:`${req.protocol}://${req.get("host")}/images/${
-        req.file.filename
-      }`})
-   
-    await Book.updateOne(filter, {
-      ...bookObject,
-      userId:req.auth.userId
-      // userId: req.auth.userId,
-      // imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      //   req.file.filename
-      // }`
-    });
-
-    return res.status(201).json({ message: "Book updated with success!" });
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({ error });
-  }
+exports.updateBook = (req, res) =>{
+  const bookObject = req.file? {
+    ...JSON.parse(req.body.book),
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${
+      req.file.optimizedFilename}`
+  } : {...req.body}
+  delete bookObject.userId
+  Book.findOne({_id:req.params.id})
+  .then((book)=>{
+    if(book.userId !== req.auth.userId){
+      res.status(401).json({message:'Not authorized.'})
+    }else{
+      Book.updateOne({_id:req.params.id},{...bookObject, _id:req.params.id})
+      .then(()=>res.status(201).json({message: 'Book updated successfully!'}))
+      .catch(error =>res.status(400).json({error}))
+    }
+  })
+  .catch(error => res.status(500).json({error}))
 };
 
-exports.deleteBook = (req, res) => {
-  Book.deleteOne({ _id: req.params.id })
-    .then(() => res.status(200).json({ message: "Book deleted with success" }))
-    .catch((error) => res.status(500).json({ error }));
-};
+// exports.deleteBook = (req, res) => {
+//   Book.deleteOne({ _id: req.params.id })
+//     .then(() => res.status(200).json({ message: "Book deleted with success" }))
+//     .catch((error) => res.status(500).json({ error }));
+// };
+exports.deleteBook = (req, res) =>{
+  Book.findOne({_id:req.params.id})
+  .then((book)=>{
+    if(book._userId != req.auth._userId){
+      res.status(401).json({message:'Not authorized'})
+    }else{
+      const filename = book.imageUrl.split('/images/')[1];
+      fs.unlink(`images/${filename}`, ()=>{
+        Book.deleteOne({_id:req.params.id})
+        .then(()=>res.status(201).json({message:'Book deleted with success!'}))
+        .catch(error => res.status(500).json({error}))
+      })
+    }
+  })
+  .catch(error => res.status(400).json({error}))
+}
