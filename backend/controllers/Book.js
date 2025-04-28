@@ -1,6 +1,6 @@
 const Book = require("../models/Book");
 const fs = require("fs");
-
+const path = require('path')
 exports.getAllBooks = (req, res) => {
   Book.find()
     .then((books) => res.status(200).json(books))
@@ -114,7 +114,7 @@ exports.deleteBook = (req, res) => {
         res.status(401).json({ message: "Not authorized" });
       } else {
         const filename = book.imageUrl.split("/images/")[1];
-        fs.unlink(`images/${filename}`, () => {
+        fs.unlink(path.join(__dirname, `../images/${filename}`), () => {
           Book.deleteOne({ _id: req.params.id })
             .then(() =>
               res.status(201).json({ message: "Book deleted with success!" })
