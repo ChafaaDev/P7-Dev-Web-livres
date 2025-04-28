@@ -37,7 +37,6 @@ mongoose
 
 app.use('/api/auth', userRoutes);
 app.use('/api/books', bookRoutes);
-// app.use('/images', express.static('./images'))
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 

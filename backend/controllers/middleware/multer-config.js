@@ -6,16 +6,18 @@ const path = require('path');
 const MIME_TYPES = {
   'image/jpeg': 'jpg',
   'image/jpg': 'jpg',
-  'image/png': 'png'
+  'image/png': 'png',
+  'image/avif':'avif',
+  'image/webp':'webp'
 };
 
-// Multer config: store in memory
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage }).single('image');
 
-// Middleware chain: upload first, then sharp
+
 const processImage = async (req, res, next) => {
-  if (!req.file) return next(); // No image uploaded
+  if (!req.file) return next(); 
 
   const extension = MIME_TYPES[req.file.mimetype];
   if (!extension) return res.status(400).send('Unsupported file type');
@@ -25,15 +27,12 @@ const processImage = async (req, res, next) => {
   const outputPath = path.join(outputDir, filename);
 
   try {
-    // if (!fs.existsSync(outputDir)) {
-    //     fs.mkdirSync(outputDir, { recursive: true });
-    // }
     await sharp(req.file.buffer)
-      .resize(800) // Resize to width 800px, adjust as needed
-      .toFormat(extension, { quality: 80 }) // Compression quality
+      .resize(800)
+      .toFormat(extension, { quality: 80 }) 
       .toFile(outputPath);
 
-    req.file.optimizedFilename = filename; // Optionally pass filename down the chain
+    req.file.optimizedFilename = filename; 
     next();
   } catch (err) {
     console.error('Sharp error:', err);
